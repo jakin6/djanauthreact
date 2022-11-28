@@ -13,4 +13,13 @@ class UserViewSet(viewsets.ModelViewSet):
     ordering=['-updated'] 
     
     def get_queryset(self):
-        return super().get_queryset()
+        if self.request.user.is_superuser:
+            return User.objects.all()
+    
+    def get_object(self):
+        lookup_field_value=self.kwargs[self.lookup_field]
+        obj=User.objects.get(lookup_field_value)
+        self.check_object_permissions(self.request,obj)
+        
+        return obj
+      
